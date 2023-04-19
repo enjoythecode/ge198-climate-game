@@ -1,14 +1,49 @@
 import React, { useState } from 'react';
 
+
+
 const TILE_TYPES = ['land', 'farmland', 'water'];
+const WOOD = "wood";
+const STONE = "stone";
+const FOOD = "food";
 const RESOURCES = ['wood', 'stone', 'food'];
 const ACTIONS = [  { name: 'Gather resources', villagersRequired: 1, tileTypes: ['land', 'farmland'], resources: ['wood', 'stone'] },
 { name: 'Prepare land for farming', villagersRequired: 2, tileTypes: ['land'], resources: ['wood'] },
 { name: 'Farm prepared land', villagersRequired: 3, tileTypes: ['farmland'], resources: ['food'] },
 ];
 
+class Tile{
+    constructor(row, column, type){
+        this.r = row;
+        this.c = column;
+        this.type = type
+    }
+}
+
+const GRID_SIDE = 5;
+
+const newDefaultTileGrid = () => {
+    let grid = Array(GRID_SIDE).fill(Array(GRID_SIDE).fill(null));
+    for (let i = 0; i < GRID_SIDE; i++){
+        for (let j = 0; j < GRID_SIDE; j++){
+            grid[i][j] = new Tile(i, j, TILE_TYPES[0]);
+        }
+    }
+    return grid;
+}
+
+const iterateOver2dArray = (array2d) => {
+    let result = []
+    for (let i = 0; i < array2d.length; i++){
+        for (let j = 0; j < array2d[i].length; j++){
+            result.push(array2d[i][j]);
+        }
+    }
+    return result;
+}
+
 const ClimateGame = () => {
-const [grid, setGrid] = useState(Array(25).fill(null));
+const [grid, setGrid] = useState(newDefaultTileGrid);
 const [villagers, setVillagers] = useState(5);
 const [resources, setResources] = useState({
 wood: 0,
@@ -17,10 +52,10 @@ food: 0,
 });
 
 const handleTileClick = (index) => {
-const newGrid = [...grid];
-const tileType = TILE_TYPES[(TILE_TYPES.indexOf(newGrid[index]) + 1) % TILE_TYPES.length];
-newGrid[index] = tileType;
-setGrid(newGrid);
+    const newGrid = [...grid];
+    const tileType = TILE_TYPES[(TILE_TYPES.indexOf(newGrid[index]) + 1) % TILE_TYPES.length];
+    newGrid[index] = tileType;
+    setGrid(newGrid);
 };
 
 const handleActionClick = (action) => {
@@ -82,15 +117,17 @@ return (
     <p>Stone: {resources.stone}</p>
     <p>Food: {resources.food}</p>
     <div className="grid">
-    {grid.map((tile, index) => (
+    {iterateOver2dArray(grid).map((tile, index) => (
+        
         <div
-        key={index}
-        className={`tile ${tile}`}
-        onClick={() => handleTileClick(index)}
-        />
+            key={index}
+            onClick={() => handleTileClick(index)}
+            >a</div>
+        
         ))}
-        </div>
-        <div className="actions">
+    </div>
+
+    <div className="actions">
         {ACTIONS.map((action, index) => (
             <div key={index}>
             <h3>{action.name}</h3>
