@@ -108,7 +108,7 @@ const Meeple = () => {
 
 const Card = ({content}) => {
     return (
-        <div className="card">{content === undefined ? "lorem ipsum" : content}</div>
+        <div className="card">{content === undefined ? "lorem ipsum card" : content}</div>
     )
 }
 
