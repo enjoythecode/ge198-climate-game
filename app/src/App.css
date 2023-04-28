@@ -1,3 +1,35 @@
+
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 240px);
+  grid-template-rows: repeat(5, 180px);
+  grid-auto-flow: column;
+  grid-gap: 0;
+}
+
+.tile-grid .cell {
+  border: 0.2px rgba(128, 128, 128, 0.278) solid;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+
+}
+
+.tile-type-forest {
+  background: url("./assets/forest_tile.png");
+  background-repeat: repeat;
+  background-size: 32px;
+}
+
+.tile-type-water {
+  background-color: #61dafb;
+}
+
+.tile-type-farmland {
+  background-color: burlywood;
+}
+
 .App {
   text-align: center;
 }
@@ -20,7 +52,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 1rem;
   color: white;
 }
 

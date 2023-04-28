@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import meeple from "./assets/meeple.png";
 
-const TILE_TYPES = ['land', 'farmland', 'water'];
+const TILE_TYPES = ['forest', 'farmland', 'water'];
 
 const ACTIONS = [
-    { name: 'Gather resources', tileTypes: ['land', 'farmland'], resourceDelta: {food: 5, wood: 1} },
-    { name: 'Prepare land for farming', tileTypes: ['land'] , resourceDelta: {wood: -2} },
+    { name: 'Gather resources', tileTypes: ['forest', 'farmland'], resourceDelta: {food: 5, wood: 1} },
+    { name: 'Prepare land for farming', tileTypes: ['forest'] , resourceDelta: {wood: -2} },
     { name: 'Farm prepared land', tileTypes: ['farmland'], resourceDelta: {food: 7}  },
+    { name: 'Fish', tileTypes: ['water'], resourceDelta: {food: 6}  },
 ];
 
 class Tile{
@@ -44,7 +46,7 @@ const newDefaultTileGrid = () => {
     let grid = {};
     for (let i = 0; i < GRID_SIDE; i++){
         for (let j = 0; j < GRID_SIDE; j++){
-            grid[i2k(i, j)] = new Tile(i2k(i, j), i, j, TILE_TYPES[0]);
+            grid[i2k(i, j)] = new Tile(i2k(i, j), i, j, TILE_TYPES[i % TILE_TYPES.length]);
         }
     }
     return grid;
@@ -87,9 +89,20 @@ const iterateOverGridInRowOrder = (grid) => {
     return result;
 }
 
+const Meeples = ({count}) => {
+    return [...Array(count)].map((e, i) => <Meeple key={i}/>)
+}
+
+const Meeple = () => {
+    return (
+        <img src={meeple} style={{width:"20px"}} alt="Meeple icon representing a villager"></img>
+    )
+}
+
 const ClimateGame = () => {
     const [grid, setGrid] = useState(newDefaultTileGrid);
     const [villagers, setVillagers] = useState(5);
+    const [turns, setTurn] = useState(1);
     const [resources, setResources] = useState({
     wood: 0,
     stone: 0,
@@ -129,71 +142,73 @@ const ClimateGame = () => {
         
     };
 
-    
-
     return (
-    <div>
-        <h2>Climate Game</h2>
-
-        {Object.entries(getResourceReportOfGrid(grid)).map(([key, value]) => {
-            return (<p key={key}>{key}: {value}</p>)
-        })}
-
-        <div className="grid" style={{width: "1000px", height:"700px"}}>
-        {iterateOverGridInRowOrder(grid).map((tile, index) => (
-            
-            <div className="cell"
-                style={{display: "inline-block", width: "20%", height: "20%"}}
-                key={index}
-            >
+    <div style={{display:"flex", flexDirection:"row"}}>
+        <div>
+            <div className="tile-grid" style={{width: "1200px", height:"900px"}}>
+            {iterateOverGridInRowOrder(grid).map((tile, index) => (
                 
-                {tile.type} [{tile.villagers}] [{tile.action === null ? "t" : "f"}]
-                
-                {tile.action !== null ? 
-                    (<div>{tile.action.name}:
-                            <p onClick={() => {changeVillagerCountOnTile(tile, +1); console.log(getResourceReportOfTile(tile))}}>+</p>
-                            <p onClick={() => changeVillagerCountOnTile(tile, -1)}>{tile.villagers > 0 ? "-" : "cancel"}</p>
-                    </div>)
-                :
-                    (
-                        <div className="actions">
-                            {tile.getValidActions().map((action, index) => (
-                                <button key={index} onClick={() => {
-                                    console.log(action);
-                                    let newGrid = {...grid};
-                                    newGrid[tile.key].action = action;
-                                    setGrid(newGrid);
-                                }
+                <div className={"cell tile-type-" + tile.type}
+                    key={index}
+                >
+                    
+                    {tile.action !== null ? 
+                        (<div>                    
+                            {tile.action.name}
 
-                                  }>
-                                    {action.name}.{tile.action===null}
-                                </button>
-                            ))}
-                        </div> 
-                    )
-                }
+                            <br/>
+                               
+                            <button style={{marginRight: "6px"}} onClick={() => changeVillagerCountOnTile(tile, -1)}>{tile.villagers > 0 ? "-" : "cancel"}</button>
+                            <Meeples count={tile.villagers}/>
+                            <button style={{marginLeft: "6px"}} onClick={() => {changeVillagerCountOnTile(tile, +1); console.log(getResourceReportOfTile(tile))}}>+</button>
+                        </div>)
+                    :
+                        (
+                            <div className="actions">
+                                {tile.getValidActions().map((action, index) => (
+                                    <button disabled={villagers === 0} key={index} onClick={() => {
+                                        let newGrid = {...grid};
+                                        newGrid[tile.key].action = action;
+                                        newGrid[tile.key].villagers = 1;
+                                        setVillagers(villagers - 1);
 
+                                        setGrid(newGrid);
+                                    }}>
+                                        {action.name}
+                                    </button>
+                                ))}
+                            </div> 
+                        )
+                    }
+                </div>
+                ))}
             </div>
-            
-            ))}
         </div>
 
-        <p>Villagers remaining: {villagers}</p>
-        <p>Wood: {resources.wood}</p>
-        <p>Stone: {resources.stone}</p>
-        <p>Food: {resources.food}</p>
+        <div>
 
-       
+            <h1>Turn {turns}</h1>
+            {Object.entries(getResourceReportOfGrid(grid)).map(([key, value]) => {
+                return (<p key={key}>{key}: {value}</p>)
+            })}
 
-        <div className="actions">
-            {ACTIONS.map((action, index) => (
-                <div key={index}>
-                <h3>{action.name}</h3>
-                <p>Available on {action.tileTypes.join(', ')}</p>
+            <p>Villagers remaining: <Meeples count={villagers}/></p>
+            <p>Wood: {resources.wood}</p>
+            <p>Stone: {resources.stone}</p>
+            <p>Food: {resources.food}</p>
+
+
+            <h3>Available Actions</h3>
+            <div className="actions">
+                {ACTIONS.map((action, index) => (
+                    <div key={index}>
+                    
+                    <p><b>{action.name}</b>: Available on {action.tileTypes.join(', ')}</p>
+                    </div>
+                ))}
                 </div>
-            ))}
-            </div>
-        </div> 
+            </div> 
+        </div>
     );
 };
 
