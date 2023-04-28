@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import meeple from "./assets/meeple.png";
+import "./deck.css"
 
 const TILE_TYPES = ['forest', 'farmland', 'water'];
+const RESOURCE_TYPES = ["food", "wood"]
 
 const ACTIONS = [
     { name: 'Gather resources', tileTypes: ['forest', 'farmland'], resourceDelta: {food: 5, wood: 1} },
     { name: 'Prepare land for farming', tileTypes: ['forest'] , resourceDelta: {wood: -2} },
-    { name: 'Farm prepared land', tileTypes: ['farmland'], resourceDelta: {food: 7}  },
+    { name: 'Tend to farm', tileTypes: ['farmland'], resourceDelta: {food: 7}  },
     { name: 'Fish', tileTypes: ['water'], resourceDelta: {food: 6}  },
 ];
 
@@ -58,6 +60,7 @@ const getResourceReportOfTile = (tile) => {
 
     let action = tile.action;
     let report = {};
+
     for(let resource in action.resourceDelta){
         if(!(resource in report)){report[resource] = 0;}
         report[resource] += action.resourceDelta[resource] * tile.villagers;
@@ -67,11 +70,15 @@ const getResourceReportOfTile = (tile) => {
 
 const getResourceReportOfGrid = (grid) => {
     let report = {};
+
+    for(let i = 0; i < RESOURCE_TYPES.length; i++) {
+        report[RESOURCE_TYPES[i]] = 0;
+    }
+
     for(let key in grid){
         let tile = grid[key];
         let tile_report = getResourceReportOfTile(tile);
         for(let tile_resource in tile_report) {
-            if(!(tile_resource in report)){report[tile_resource] = 0;}
             report[tile_resource] += tile_report[tile_resource];
         }
     }
@@ -95,7 +102,13 @@ const Meeples = ({count}) => {
 
 const Meeple = () => {
     return (
-        <img src={meeple} style={{width:"20px"}} alt="Meeple icon representing a villager"></img>
+        <img src={meeple} style={{width:"30px"}} alt="Meeple icon representing a villager"></img>
+    )
+}
+
+const Card = ({content}) => {
+    return (
+        <div className="card">{content === undefined ? "lorem ipsum" : content}</div>
     )
 }
 
@@ -104,9 +117,8 @@ const ClimateGame = () => {
     const [villagers, setVillagers] = useState(5);
     const [turns, setTurn] = useState(1);
     const [resources, setResources] = useState({
-    wood: 0,
-    stone: 0,
-    food: 0,
+    wood: 20,
+    food: 20,
     });
 
     const changeVillagerCountOnTile = (tile, delta) => {
@@ -136,11 +148,11 @@ const ClimateGame = () => {
             }
         }
 
-        
-        
         setGrid(newGrid);
         
     };
+
+    let resourceChangeReport = getResourceReportOfGrid(grid);
 
     return (
     <div style={{display:"flex", flexDirection:"row"}}>
@@ -188,28 +200,48 @@ const ClimateGame = () => {
         <div>
 
             <h1>Turn {turns}</h1>
-            {Object.entries(getResourceReportOfGrid(grid)).map(([key, value]) => {
-                return (<p key={key}>{key}: {value}</p>)
-            })}
 
-            <p>Villagers remaining: <Meeples count={villagers}/></p>
-            <p>Wood: {resources.wood}</p>
-            <p>Stone: {resources.stone}</p>
-            <p>Food: {resources.food}</p>
+            <p>Unallocated meeples</p><br/>
+            <Meeples count={villagers}/>
 
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Current</th>
+                    <th>Actions</th>
+                    <th>New</th>
+                </tr>
+                <tr>
+                    <td>Food</td>
+                    <td>{resources.food}</td>
+                    <td>{resourceChangeReport["food"]}</td>
+                    <td>{resources.food + resourceChangeReport["food"]}</td>
+                </tr>
+                <tr>
+                    <td>Wood</td>
+                    <td>{resources.wood}</td>
+                    <td>{resourceChangeReport["wood"]}</td>
+                    <td>{resources.wood + resourceChangeReport["wood"]}</td>
+                </tr>
+                
+            </table>
 
             <h3>Available Actions</h3>
-            <div className="actions">
+            <div className="actions" style={{textAlign: "left"}}>
                 {ACTIONS.map((action, index) => (
                     <div key={index}>
                     
-                    <p><b>{action.name}</b>: Available on {action.tileTypes.join(', ')}</p>
+                    <p><b>{action.name}</b> {"["+ action.tileTypes.join('] [') + "]"}</p>
                     </div>
                 ))}
                 </div>
+                <Card></Card>
             </div> 
+        
+           
         </div>
     );
 };
+
 
 export default ClimateGame;
