@@ -1,149 +1,199 @@
 import React, { useState } from 'react';
 
-
-
 const TILE_TYPES = ['land', 'farmland', 'water'];
-const WOOD = "wood";
-const STONE = "stone";
-const FOOD = "food";
-const RESOURCES = ['wood', 'stone', 'food'];
-const ACTIONS = [  { name: 'Gather resources', villagersRequired: 1, tileTypes: ['land', 'farmland'], resources: ['wood', 'stone'] },
-{ name: 'Prepare land for farming', villagersRequired: 2, tileTypes: ['land'], resources: ['wood'] },
-{ name: 'Farm prepared land', villagersRequired: 3, tileTypes: ['farmland'], resources: ['food'] },
+
+const ACTIONS = [
+    { name: 'Gather resources', tileTypes: ['land', 'farmland'], resourceDelta: {food: 5, wood: 1} },
+    { name: 'Prepare land for farming', tileTypes: ['land'] , resourceDelta: {wood: -2} },
+    { name: 'Farm prepared land', tileTypes: ['farmland'], resourceDelta: {food: 7}  },
 ];
 
 class Tile{
-    constructor(row, column, type){
+    constructor(key, row, column, type){
+        this.key = key;
         this.r = row;
         this.c = column;
-        this.type = type
+        this.type = type;
+        this.villagers = 0;
+        this.action = null;
+    }
+
+    setAction = (action) => {
+        this.action = action;
+    }
+
+    getValidActions = () => {
+        let result = [];
+
+        for(let i = 0; i < ACTIONS.length; i++) {
+            if(ACTIONS[i].tileTypes.includes(this.type)){
+                result.push(ACTIONS[i]);
+            }
+        }
+        return result;
     }
 }
 
 const GRID_SIDE = 5;
 
+const i2k = (x, y) => {
+    return x.toString() + "_" + y.toString();
+}
+
 const newDefaultTileGrid = () => {
-    let grid = Array(GRID_SIDE).fill(Array(GRID_SIDE).fill(null));
+    let grid = {};
     for (let i = 0; i < GRID_SIDE; i++){
         for (let j = 0; j < GRID_SIDE; j++){
-            grid[i][j] = new Tile(i, j, TILE_TYPES[0]);
+            grid[i2k(i, j)] = new Tile(i2k(i, j), i, j, TILE_TYPES[0]);
         }
     }
     return grid;
 }
 
-const iterateOver2dArray = (array2d) => {
+const getResourceReportOfTile = (tile) => {
+    if (tile.action === null) {return {}}
+    if (tile.villagers === 0) {return {}}
+
+    let action = tile.action;
+    let report = {};
+    for(let resource in action.resourceDelta){
+        if(!(resource in report)){report[resource] = 0;}
+        report[resource] += action.resourceDelta[resource] * tile.villagers;
+    }
+    return report;
+}
+
+const getResourceReportOfGrid = (grid) => {
+    let report = {};
+    for(let key in grid){
+        let tile = grid[key];
+        let tile_report = getResourceReportOfTile(tile);
+        for(let tile_resource in tile_report) {
+            if(!(tile_resource in report)){report[tile_resource] = 0;}
+            report[tile_resource] += tile_report[tile_resource];
+        }
+    }
+    return report;
+}
+
+const iterateOverGridInRowOrder = (grid) => {
+    
     let result = []
-    for (let i = 0; i < array2d.length; i++){
-        for (let j = 0; j < array2d[i].length; j++){
-            result.push(array2d[i][j]);
+    for (let i = 0; i < GRID_SIDE; i++){
+        for (let j = 0; j < GRID_SIDE; j++){
+            result.push(grid[i2k(i, j)]);
         }
     }
     return result;
 }
 
 const ClimateGame = () => {
-const [grid, setGrid] = useState(newDefaultTileGrid);
-const [villagers, setVillagers] = useState(5);
-const [resources, setResources] = useState({
-wood: 0,
-stone: 0,
-food: 0,
-});
+    const [grid, setGrid] = useState(newDefaultTileGrid);
+    const [villagers, setVillagers] = useState(5);
+    const [resources, setResources] = useState({
+    wood: 0,
+    stone: 0,
+    food: 0,
+    });
 
-const handleTileClick = (index) => {
-    const newGrid = [...grid];
-    const tileType = TILE_TYPES[(TILE_TYPES.indexOf(newGrid[index]) + 1) % TILE_TYPES.length];
-    newGrid[index] = tileType;
-    setGrid(newGrid);
-};
+    const changeVillagerCountOnTile = (tile, delta) => {
+        /*
+         * `delta` villagers will be taken from the general pool and added to the tile pool 
+         * So, +1 increments the tile villagers count (taking from available pool), and -1 decrements from the tile.
+         * 
+        */
 
-const handleActionClick = (action) => {
-if (villagers < action.villagersRequired) {
-    alert(`You need at least ${action.villagersRequired} villagers to perform this action.`);
-    return;
-}
+        let newGrid = {...grid};
+        // special case for cancel; if no villagers and "decrement", reset the action to null
+        console.log(tile.villagers, delta, tile.villagers === 0, delta === -1, tile.villagers === 0 && delta === -1)
+        if(newGrid[tile.key].villagers === 0 && delta === -1) {
 
-const tileIndices = [];
-for (let i = 0; i < grid.length; i++) {
-    if (action.tileTypes.includes(grid[i])) {
-    tileIndices.push(i);
-    }
-}
+            newGrid[tile.key].action = null;
+            
+        } else {
+            // no action should leave either total pool or tile pool with negative villagers
+            if(villagers - delta >= 0 && tile.villagers + delta >= 0){ 
+                setVillagers(villagers - delta);
+                let new_villagers_on_tile = newGrid[tile.key].villagers + delta;
+                newGrid[tile.key].villagers = new_villagers_on_tile;
 
-if (tileIndices.length === 0) {
-    alert(`There are no tiles available for this action.`);
-    return;
-}
+                /*if (new_villagers_on_tile === 0) {
+                    newGrid[tile.key].action = null;
+                }*/
+            }
+        }
 
-const index = tileIndices[Math.floor(Math.random() * tileIndices.length)];
-const newGrid = [...grid];
-switch (action.name) {
-    case 'Gather resources':
-    newGrid[index] = 'water';
-    break;
-    case 'Prepare land for farming':
-    newGrid[index] = 'farmland';
-    break;
-    case 'Farm prepared land':
-    newGrid[index] = 'land';
-    break;
-    default:
-    break;
-}
-setGrid(newGrid);
-setVillagers(villagers - action.villagersRequired);
-
-const newResources = { ...resources };
-for (let resource of action.resources) {
-    newResources[resource] += 1;
-}
-setResources(newResources);
-};
-
-const handleVillagerAllocation = (action, amount) => {
-if (action === 'add') {
-    setVillagers(villagers + amount);
-} else {
-    setVillagers(villagers - amount);
-}
-};
-
-return (
-<div>
-    <h2>Climate Game</h2>
-    <p>Villagers remaining: {villagers}</p>
-    <p>Wood: {resources.wood}</p>
-    <p>Stone: {resources.stone}</p>
-    <p>Food: {resources.food}</p>
-    <div className="grid">
-    {iterateOver2dArray(grid).map((tile, index) => (
         
-        <div
-            key={index}
-            onClick={() => handleTileClick(index)}
-            >a</div>
         
-        ))}
-    </div>
+        setGrid(newGrid);
+        
+    };
 
-    <div className="actions">
-        {ACTIONS.map((action, index) => (
-            <div key={index}>
-            <h3>{action.name}</h3>
-            <p>Requires {action.villagersRequired} villagers</p>
-            <p>Available on {action.tileTypes.join(', ')}</p>
-            <p>Costs: {action.resources.join(', ')}</p>
-            <button onClick={() => handleActionClick(action)}>Perform action</button>
+    
+
+    return (
+    <div>
+        <h2>Climate Game</h2>
+
+        {Object.entries(getResourceReportOfGrid(grid)).map(([key, value]) => {
+            return (<p key={key}>{key}: {value}</p>)
+        })}
+
+        <div className="grid" style={{width: "1000px", height:"700px"}}>
+        {iterateOverGridInRowOrder(grid).map((tile, index) => (
+            
+            <div className="cell"
+                style={{display: "inline-block", width: "20%", height: "20%"}}
+                key={index}
+            >
+                
+                {tile.type} [{tile.villagers}] [{tile.action === null ? "t" : "f"}]
+                
+                {tile.action !== null ? 
+                    (<div>{tile.action.name}:
+                            <p onClick={() => {changeVillagerCountOnTile(tile, +1); console.log(getResourceReportOfTile(tile))}}>+</p>
+                            <p onClick={() => changeVillagerCountOnTile(tile, -1)}>{tile.villagers > 0 ? "-" : "cancel"}</p>
+                    </div>)
+                :
+                    (
+                        <div className="actions">
+                            {tile.getValidActions().map((action, index) => (
+                                <button key={index} onClick={() => {
+                                    console.log(action);
+                                    let newGrid = {...grid};
+                                    newGrid[tile.key].action = action;
+                                    setGrid(newGrid);
+                                }
+
+                                  }>
+                                    {action.name}.{tile.action===null}
+                                </button>
+                            ))}
+                        </div> 
+                    )
+                }
+
             </div>
-        ))}
+            
+            ))}
         </div>
-        <div className="villager-allocation">
-        <h3>Villager allocation</h3>
-        <button onClick={() => handleVillagerAllocation('add', 1)}>Add villager</button>
-        <button onClick={() => handleVillagerAllocation('remove', 1)}>Remove villager</button>
-        </div>
-    </div>
+
+        <p>Villagers remaining: {villagers}</p>
+        <p>Wood: {resources.wood}</p>
+        <p>Stone: {resources.stone}</p>
+        <p>Food: {resources.food}</p>
+
+       
+
+        <div className="actions">
+            {ACTIONS.map((action, index) => (
+                <div key={index}>
+                <h3>{action.name}</h3>
+                <p>Available on {action.tileTypes.join(', ')}</p>
+                </div>
+            ))}
+            </div>
+        </div> 
     );
 };
 
