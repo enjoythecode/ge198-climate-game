@@ -1,9 +1,18 @@
-
+.card {
+  background-color: bisque;
+  border-radius: 20px;
+  height: 200px;
+  width: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}
 
 .tile-grid {
   display: grid;
   grid-template-columns: repeat(5, 240px);
-  grid-template-rows: repeat(5, 180px);
+  grid-template-rows: repeat(5, 20vh);
   grid-auto-flow: column;
   grid-gap: 0;
 }
@@ -37,43 +46,10 @@
 
 .App {
   text-align: center;
+  background-color:blanchedalmond;
+  width: 100vw;
+  height: 100vh;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 
 p {
   padding: 0;

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import meeple from "./assets/meeple.png";
-import "./deck.css"
 
 const TILE_TYPES = ['forest', 'farmland', 'water'];
 const RESOURCE_TYPES = ["food", "wood"]
 
 const ACTIONS = [
-    { name: 'Gather resources', tileTypes: ['forest', 'farmland'], resourceDelta: {food: 5, wood: 1} },
+    { name: 'Gather resources', tileTypes: ['forest'], resourceDelta: {food: 5, wood: 1} },
     { name: 'Prepare land for farming', tileTypes: ['forest'] , resourceDelta: {wood: -2} },
     { name: 'Tend to farm', tileTypes: ['farmland'], resourceDelta: {food: 7}  },
     { name: 'Fish', tileTypes: ['water'], resourceDelta: {food: 6}  },
