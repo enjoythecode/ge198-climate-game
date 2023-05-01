@@ -172,7 +172,46 @@ const Fact = (props) => {
             </div>)
         }
     }
+}
 
+const countOfTypeInGrid = (grid, type) => {
+    let result = 0;
+
+    for(let key in grid){
+        if(grid[key].type === type){result += 1}
+    }
+    return result;
+}
+
+const ScoreIndicator = ({delta}) => {
+    let color = delta > 0 ? "#00FF00" : "#FF0000"
+    // color: delta > 0 ? "black" : "white"
+    return (<div style={{display: "inline-block"}}>{delta > 0 ? "+" : ""}{delta}</div>)
+}
+
+const DEMANDS = {
+    "Easter Island": [
+        {
+            name: "Farming",
+            flavor: "TODO FLAVOR",
+            activation: {
+                "robot": (game) => {return game.turns >= 2},
+                "human": "turn is at least 2"
+            },
+            satisfaction: {
+                "robot": (game) => {return countOfTypeInGrid(game.grid, "farmland") >= 1},
+                "human": "have at least 1 farmland"
+            },
+            reward: {
+                "robot": {score: 1},
+                "human": "+1 score"
+            },
+            penalty: {
+                "robot": {score: -1},
+                "human": "-1 score"
+            }
+        }
+    ]
 }
 
 const ClimateGame = ({scenario_name}) => {
@@ -244,6 +283,9 @@ const ClimateGame = ({scenario_name}) => {
 
         for(let tile_key in newGrid){
             newVillagers += newGrid[tile_key].villagers;
+            if(newGrid[tile_key].action !== null){
+                if(newGrid[tile_key].action.name === "Prepare land for farming"){newGrid[tile_key].type="farmland"}
+            }
             newGrid[tile_key].villagers = 0;
             newGrid[tile_key].action = null;
         }
@@ -265,10 +307,9 @@ const ClimateGame = ({scenario_name}) => {
 
                 <a href="https://www.archaeology.org/news/1329-130926-easter-island-diet-rats">Read more</a>
                 </p>),
-            "Gather Resources" : (<p>
-                
-                LOREM IPSUM DOLOR SIT AMET
-                </p>)
+            "Gather Resources" : (<p>TODO FLAVOR</p>),
+            "Prepare land for farming" : (<p>TODO FLAVOR</p>), 
+            "Tend to farm" : (<p>TODO FLAVOR</p>),
         }
     }
 
@@ -412,9 +453,46 @@ const ClimateGame = ({scenario_name}) => {
                         </div>
                     </div>
                 </div>
-                <div>
+                <div style={{marginRight: "8px"}}>
                     <h3>Societal Demands</h3>
-                    <Card></Card>
+                    {DEMANDS[scenario_name].map((demand, i) => {
+                        let game = {
+                            grid: grid,
+                            setGrid: setGrid,
+                            turns: turns,
+                            villagers: villagers,
+                            setVillagers: setVillagers,
+                        }
+                        
+                        let isActive = demand.activation.robot(game);
+                        let isSatisfied = demand.satisfaction.robot(game);
+                        let rewardText = <div>Reward: {demand.reward.human}</div>;
+                        let penaltyText = <div>Penalty: {demand.penalty.human}</div>;
+
+                        return (
+                            <div className="card">
+                                <div style={{textAlign: "left", color: isActive ? "white" : "gray"}}>
+                                    <b>{demand.name} {isActive ? "[active]" : "[inactive]"}</b>
+                                    <br/>
+                                    <br/>
+
+                                    {isActive ? "Active because " : "Will activate when "}{demand.activation.human}<br/>
+
+                                    <p style={{color: isActive ? (isSatisfied ? "green" : "white") : "inherit"}}>
+                                        {isSatisfied ? "You have fulfilled: " : "Demand is to "}{demand.satisfaction.human}<br/>
+                                    </p>
+                                    <br/>
+
+                                    {(isActive && isSatisfied) ? <b>{rewardText}</b> : rewardText}
+                                    {(isActive && !isSatisfied) ? <b>{penaltyText}</b> : penaltyText}
+
+                                    <Fact credits={credits} setCredits={setCredits}>
+                                        {demand.flavor}
+                                    </Fact>
+
+                                </div>
+                            </div>)
+                    })}
                 </div>
             </div>
                 
