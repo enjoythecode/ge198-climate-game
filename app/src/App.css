@@ -11,14 +11,13 @@
 }
 
 .card {
-  background-color: bisque;
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 20px;
   height: 200px;
   width: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: black;
 }
 
 .tile-grid {

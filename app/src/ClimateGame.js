@@ -222,6 +222,16 @@ const ClimateGame = ({scenario_name}) => {
 
     let resourceChangeReport = getResourceReportOfGrid(grid);
 
+    const actionFlavorText = {
+        "Easter Island": {
+            "Fish": (<p>
+                Researchers in 2013 were surprised by the lack of seafood in the diet of the inhabitants of the Rapa Nui.
+                According to Amy Commendador, "Traditionally, from Polynesian cultures you have a heavy predominance of using marine products, especially in the early phase of colonization"
+                <a href="https://www.livescience.com/39926-easter-islanders-ate-rats.html">link</a>
+            </p>)
+        }
+    }
+
     return (
     <div style={{display:"flex", flexDirection:"row", justifyContent: "space-around"}}>
         <div>
@@ -244,7 +254,7 @@ const ClimateGame = ({scenario_name}) => {
                         </div>)
                     :
                         (
-                            <div className="actions">
+                            <div>
                                 {tile.getValidActions().map((action, index) => (
                                     <button disabled={villagers === 0} key={index} onClick={() => {
                                         let newGrid = {...grid};
@@ -328,7 +338,7 @@ const ClimateGame = ({scenario_name}) => {
                                 Available on {action.tileTypes.join(", ")} <br/>
 
                                 <div className="edu">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet 
+                                    {actionFlavorText[scenario_name][action.name]}
                                 </div>
                                 </p>
 
