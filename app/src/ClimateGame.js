@@ -132,7 +132,7 @@ const Meeple = () => {
 
 const Card = ({content}) => {
     return (
-        <div className="card">{content === undefined ? "lorem ipsum card" : content}</div>
+        <div className="card">{content === undefined ? "lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet" : content}</div>
     )
 }
 
@@ -155,7 +155,7 @@ const societyMeterColorAtX = (x) => {
 }
 
 const ClimateGame = ({scenario_name}) => {
-    const [success, setSuccess] = useState(Math.floor(meterN / 2))
+    const [success] = useState(Math.floor(meterN / 2))
     const [grid, setGrid] = useState(newDefaultTileGrid(scenario_name));
     const [villagers, setVillagers] = useState(success);
     const [turns, setTurn] = useState(1);
