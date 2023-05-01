@@ -5,10 +5,10 @@ const TILE_TYPES = ['forest', 'farmland', 'water'];
 const RESOURCE_TYPES = ["food", "wood"]
 
 const ACTIONS = [
-    { name: 'Gather resources', tileTypes: ['forest'], resourceDelta: {food: 5, wood: 1} },
-    { name: 'Prepare land for farming', tileTypes: ['forest'] , resourceDelta: {wood: -2} },
-    { name: 'Tend to farm', tileTypes: ['farmland'], resourceDelta: {food: 7}  },
-    { name: 'Fish', tileTypes: ['water'], resourceDelta: {food: 6}  },
+    { name: 'Gather resources', currentTenseName: "Gathering resources", tileTypes: ['forest'], resourceDelta: {food: 5, wood: 1} },
+    { name: 'Prepare land for farming', currentTenseName: "Preparing land for farming", tileTypes: ['forest'] , resourceDelta: {wood: -2} },
+    { name: 'Tend to farm', currentTenseName: "Tending to farm", tileTypes: ['farmland'], resourceDelta: {food: 7}  },
+    { name: 'Fish', currentTenseName: "Fishing", tileTypes: ['water'], resourceDelta: {food: 6}  },
 ];
 
 class Tile{
@@ -187,15 +187,19 @@ const ClimateGame = ({scenario_name}) => {
                 let new_villagers_on_tile = newGrid[tile.key].villagers + delta;
                 newGrid[tile.key].villagers = new_villagers_on_tile;
 
-                /*if (new_villagers_on_tile === 0) {
+                if (new_villagers_on_tile === 0) {
                     newGrid[tile.key].action = null;
-                }*/
+                }
             }
         }
 
         setGrid(newGrid);
         
     };
+
+    const getUpkeepOf = (resource) => {
+        return 0;
+    }
 
     const advanceTurn = () => {
 
@@ -206,6 +210,7 @@ const ClimateGame = ({scenario_name}) => {
 
         for(let resource in report){
             newResources[resource] += report[resource];
+            newResources[resource] += getUpkeepOf(resource);
         }
 
         for(let tile_key in newGrid){
@@ -239,35 +244,44 @@ const ClimateGame = ({scenario_name}) => {
             <div className="tile-grid" style={{width: "60vw", height:"100vh"}}>
             {iterateOverGridInRowOrder(grid).map((tile, index) => (
                 
-                <div className={"cell tile-type-" + tile.type}
+                <div
+                    className={"centerBoth cell tile-type-" + tile.type}
+                    style={{flexDirection: "row"}}
                     key={index}
                 >
                     
                     {tile.action !== null ? 
-                        (<div>                    
-                            {tile.action.name}
+                        (<div className="centerBoth" style={{flexDirection: "column", width: "80%"}}>                    
+                            
+                            <b>{tile.action.currentTenseName}</b>
 
                             <br/>
-                               
-                            <button style={{marginRight: "6px"}} onClick={() => changeVillagerCountOnTile(tile, -1)}>{tile.villagers > 0 ? "-" : "cancel"}</button>
-                            <Meeples count={tile.villagers}/>
-                            <button disabled={villagers === 0} style={{marginLeft: "6px"}} onClick={() => {changeVillagerCountOnTile(tile, +1); console.log(getResourceReportOfTile(tile))}}>+</button>
+                            
+                            <div style={{display:"flex", flexDirection: "row", justifyContent: "space-between"}}>
+                                <button className="button-38" style={{marginRight: "6px"}} onClick={() => changeVillagerCountOnTile(tile, -1)}>{tile.villagers > 0 ? "-" : "cancel"}</button>
+                                <Meeples count={tile.villagers}/>
+                                <button className="button-38" disabled={villagers === 0} style={{marginLeft: "6px"}} onClick={() => {changeVillagerCountOnTile(tile, +1); console.log(getResourceReportOfTile(tile))}}>+</button>
+                            </div>
                         </div>)
                     :
                         (
-                            <div>
-                                {tile.getValidActions().map((action, index) => (
-                                    <button disabled={villagers === 0} key={index} onClick={() => {
-                                        let newGrid = {...grid};
-                                        newGrid[tile.key].action = action;
-                                        newGrid[tile.key].villagers = 1;
-                                        setVillagers(villagers - 1);
+                            <div className="centerBoth" style={{flexDirection: "column", height: "100%"}}>
+                                
+                                    {tile.getValidActions().map((action, index) => (
+                                        <div style={{display: "flex", justifyContent: "center"}}>
+                                            <button className="button-38" disabled={villagers === 0} key={index} onClick={() => {
+                                                let newGrid = {...grid};
+                                                newGrid[tile.key].action = action;
+                                                newGrid[tile.key].villagers = 1;
+                                                setVillagers(villagers - 1);
 
-                                        setGrid(newGrid);
-                                    }}>
-                                        {action.name}
-                                    </button>
-                                ))}
+                                                setGrid(newGrid);
+                                            }}>
+                                                {action.name}
+                                            </button>
+                                        </div>
+                                    ))}
+          
                             </div> 
                         )
                     }
@@ -295,38 +309,48 @@ const ClimateGame = ({scenario_name}) => {
             
             <div style={{display:"flex", flexDirection:"row", justifyContent: "space-around"}}>
                 <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Current</th>
-                                <th>Actions</th>
-                                <th>New</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Food</td>
-                                <td>{resources.food}</td>
-                                <td>{resourceChangeReport["food"]}</td>
-                                <td>{resources.food + resourceChangeReport["food"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Wood</td>
-                                <td>{resources.wood}</td>
-                                <td>{resourceChangeReport["wood"]}</td>
-                                <td>{resources.wood + resourceChangeReport["wood"]}</td>
-                            </tr>
-                        </tbody>
-                    </table>
                     
-                    <div>
-                    {villagers > 0 ?
-                    <p>To allocate: <br/> <Meeples count={villagers}/></p> :
-                    <button disabled={villagers !== 0} onClick={() => {advanceTurn()}}>Advance turn</button>
-                    }
-                    <br/>
-                </div>
+                    <h3>Overview</h3>
+                    <div className="dashboard" >
+
+                        <div style={{display: "flex", justifyContent: "center"}}>
+                            <table style={{width: "20vw"}}>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Current</th>
+                                        <th>Actions</th>
+                                        <th>Upkeep</th>
+                                        <th>New</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Food</td>
+                                        <td>{resources.food}</td>
+                                        <td>{resourceChangeReport["food"]}</td>
+                                        <td>{getUpkeepOf("food")}</td>
+                                        <td>{resources.food + resourceChangeReport["food"] + getUpkeepOf("food")}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wood</td>
+                                        <td>{resources.wood}</td>
+                                        <td>{resourceChangeReport["wood"]}</td>
+                                        <td>{getUpkeepOf("wood")}</td>
+                                        <td>{resources.wood + resourceChangeReport["wood"] + getUpkeepOf("wood")}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style={{marginTop: "20px"}}>
+                            {villagers > 0 ?
+                            <p><b>Allocate your meeples :)</b> <br/> <Meeples count={villagers}/></p> :
+                            <button className="button-38 button-38-extra" disabled={villagers !== 0} onClick={() => {advanceTurn()}}>Advance turn</button>
+                            }
+                            <br/>
+                        </div>
+                    </div>
                     
                     <h3>Available Actions</h3>
                     <div className="actions" style={{textAlign: "left"}}>
