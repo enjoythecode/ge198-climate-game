@@ -493,44 +493,46 @@ const ClimateGame = ({scenario_name}) => {
                 </div>
                 <div style={{marginRight: "8px"}}>
                     <h3>Societal Demands</h3>
-                    {DEMANDS[scenario_name].map((demand, i) => {
-                        let game = {
-                            grid: grid,
-                            setGrid: setGrid,
-                            turns: turns,
-                            villagers: villagers,
-                            setVillagers: setVillagers,
-                        }
-                        
-                        let isActive = demand.activation.robot(game);
-                        let isSatisfied = demand.satisfaction.robot(game);
-                        let rewardText = <div>Reward: {demand.reward.human}</div>;
-                        let penaltyText = <div>Penalty: {demand.penalty.human}</div>;
+                    <div style={{overflow: "scroll"}}>
+                        {DEMANDS[scenario_name].map((demand, i) => {
+                            let game = {
+                                grid: grid,
+                                setGrid: setGrid,
+                                turns: turns,
+                                villagers: villagers,
+                                setVillagers: setVillagers,
+                            }
+                            
+                            let isActive = demand.activation.robot(game);
+                            let isSatisfied = demand.satisfaction.robot(game);
+                            let rewardText = <div>Reward: {demand.reward.human}</div>;
+                            let penaltyText = <div>Penalty: {demand.penalty.human}</div>;
 
-                        return (
-                            <div className="card">
-                                <div style={{textAlign: "left", color: isActive ? "white" : "gray"}}>
-                                    <b>{demand.name} {isActive ? "[active]" : "[inactive]"}</b>
-                                    <br/>
-                                    <br/>
+                            return (
+                                <div className="card">
+                                    <div style={{textAlign: "left", color: isActive ? "white" : "gray"}}>
+                                        <b>{demand.name} {isActive ? "[active]" : "[inactive]"}</b>
+                                        <br/>
+                                        <br/>
 
-                                    {isActive ? "Active because " : "Will activate when "}{demand.activation.human}<br/>
+                                        {isActive ? "Active because " : "Will activate when "}{demand.activation.human}<br/>
 
-                                    <p style={{color: isActive ? (isSatisfied ? "green" : "white") : "inherit"}}>
-                                        {isSatisfied ? "You have fulfilled: " : "Demand is to "}{demand.satisfaction.human}<br/>
-                                    </p>
-                                    <br/>
+                                        <p style={{color: isActive ? (isSatisfied ? "green" : "white") : "inherit"}}>
+                                            {isSatisfied ? "You have fulfilled: " : "Demand is to "}{demand.satisfaction.human}<br/>
+                                        </p>
+                                        <br/>
 
-                                    {(isActive && isSatisfied) ? <b>{rewardText}</b> : rewardText}
-                                    {(isActive && !isSatisfied) ? <b>{penaltyText}</b> : penaltyText}
+                                        {(isActive && isSatisfied) ? <b>{rewardText}</b> : rewardText}
+                                        {(isActive && !isSatisfied) ? <b>{penaltyText}</b> : penaltyText}
 
-                                    <Fact credits={credits} setCredits={setCredits}>
-                                        {demand.flavor}
-                                    </Fact>
+                                        <Fact credits={credits} setCredits={setCredits}>
+                                            {demand.flavor}
+                                        </Fact>
 
-                                </div>
-                            </div>)
-                    })}
+                                    </div>
+                                </div>)
+                        })}
+                        </div>
                 </div>
             </div>
                 
