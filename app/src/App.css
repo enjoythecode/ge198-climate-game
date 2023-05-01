@@ -7,11 +7,6 @@
   margin: 6px
 }
 
-.actions {
-  overflow: scroll;
-  height: 60vh;
-}
-
 .card {
   height: 200px;
   width: 280px;
@@ -59,8 +54,9 @@
  * Prevent scrolling of the main body (it is intended as a one page experience, and scrolling on Mac at least shows white borders that I don't like
  * https://stackoverflow.com/questions/28411499/disable-scrolling-on-body#28411556
  */
-html, body {
-  margin: 0; height: 100%; overflow: hidden
+html {
+  height: 100%;
+  overflow: hidden;  
 }
 
 .App {
@@ -70,7 +66,6 @@ html, body {
   color: white;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
 }
 
 button {

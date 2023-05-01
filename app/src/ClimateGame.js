@@ -290,7 +290,7 @@ const ClimateGame = ({scenario_name}) => {
             </div>
         </div>
 
-        <div style={{flexGrow: 1, display: "flex", flexDirection: "column"}}>
+        <div style={{flexGrow: 1, display: "flex", flexDirection: "column", height: "100wh"}}>
 
             <div style={{display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
                 <h1>Scenario: {scenario_name}</h1>
@@ -307,69 +307,73 @@ const ClimateGame = ({scenario_name}) => {
             </div>
            
             
-            <div style={{display:"flex", flexDirection:"row", justifyContent: "space-around"}}>
-                <div>
+            <div style={{flexGrow: 1, display:"flex", flexDirection:"row", justifyContent: "space-around"}}>
+                <div style={{display: "flex", flexDirection: "column"}}>
                     
-                    <h3>Overview</h3>
-                    <div className="dashboard" >
+                    <div style={{flex: "content"}}>
+                        <h3>Overview</h3>
+                        <div className="dashboard" >
 
-                        <div style={{display: "flex", justifyContent: "center"}}>
-                            <table style={{width: "20vw"}}>
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Current</th>
-                                        <th>Actions</th>
-                                        <th>Upkeep</th>
-                                        <th>New</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Food</td>
-                                        <td>{resources.food}</td>
-                                        <td>{resourceChangeReport["food"]}</td>
-                                        <td>{getUpkeepOf("food")}</td>
-                                        <td>{resources.food + resourceChangeReport["food"] + getUpkeepOf("food")}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Wood</td>
-                                        <td>{resources.wood}</td>
-                                        <td>{resourceChangeReport["wood"]}</td>
-                                        <td>{getUpkeepOf("wood")}</td>
-                                        <td>{resources.wood + resourceChangeReport["wood"] + getUpkeepOf("wood")}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                            <div style={{display: "flex", justifyContent: "center"}}>
+                                <table style={{width: "20vw"}}>
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Current</th>
+                                            <th>Actions</th>
+                                            <th>Upkeep</th>
+                                            <th>New</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Food</td>
+                                            <td>{resources.food}</td>
+                                            <td>{resourceChangeReport["food"]}</td>
+                                            <td>{getUpkeepOf("food")}</td>
+                                            <td>{resources.food + resourceChangeReport["food"] + getUpkeepOf("food")}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Wood</td>
+                                            <td>{resources.wood}</td>
+                                            <td>{resourceChangeReport["wood"]}</td>
+                                            <td>{getUpkeepOf("wood")}</td>
+                                            <td>{resources.wood + resourceChangeReport["wood"] + getUpkeepOf("wood")}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        <div style={{marginTop: "20px"}}>
-                            {villagers > 0 ?
-                            <p><b>Allocate your meeples :)</b> <br/> <Meeples count={villagers}/></p> :
-                            <button className="button-38 button-38-extra" disabled={villagers !== 0} onClick={() => {advanceTurn()}}>Advance turn</button>
-                            }
-                            <br/>
+                            <div style={{marginTop: "20px"}}>
+                                {villagers > 0 ?
+                                <p><b>Allocate your meeples :)</b> <br/> <Meeples count={villagers}/></p> :
+                                <button className="button-38 button-38-extra" disabled={villagers !== 0} onClick={() => {advanceTurn()}}>Advance turn</button>
+                                }
+                                <br/>
+                            </div>
                         </div>
                     </div>
+                    <h3 style={{marginTop: 0}}>Available Actions</h3>
+                    <div style={{flex: "1 50vh", overflow: "scroll"}}>
+                        
+                        <div className="actions" style={{textAlign: "left"}}>
                     
-                    <h3>Available Actions</h3>
-                    <div className="actions" style={{textAlign: "left"}}>
-                
-                        {ACTIONS.map((action, index) => (
-                            <div key={index} className="action">
-                            <p>
-                                <h4 style={{margin: 0}}>{action.name}</h4>
+                            {ACTIONS.map((action, index) => (
+                                <div key={index} className="action">
+                                <p>
+                                    <h4 style={{margin: 0}}>{action.name}</h4>
 
-                                Available in {action.tileTypes.join(", ")} <br/>
-                                Per meeple: <span>{(Object.entries(action.resourceDelta).map(([k, v]) => {return ( (v > 0 ? "+" : "") + v.toString() + " " + k)})).join(", ")}</span><br/>
+                                    Available in {action.tileTypes.join(", ")} <br/>
+                                    Per meeple: <span>{(Object.entries(action.resourceDelta).map(([k, v]) => {return ( (v > 0 ? "+" : "") + v.toString() + " " + k)})).join(", ")}</span><br/>
 
-                                <div className="edu">
-                                    {actionFlavorText[scenario_name][action.name]}
+                                    <div className="edu">
+                                        {actionFlavorText[scenario_name][action.name]}
+                                    </div>
+                                    </p>
+
                                 </div>
-                                </p>
-
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
                 <div>
