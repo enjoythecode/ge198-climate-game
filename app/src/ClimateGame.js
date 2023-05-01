@@ -130,12 +130,6 @@ const Meeple = () => {
     )
 }
 
-const Card = ({content}) => {
-    return (
-        <div className="card">{content === undefined ? "lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet" : content}</div>
-    )
-}
-
 const meterN = 10;
 
 const societyMeterColorAtX = (x) => {
@@ -181,12 +175,6 @@ const countOfTypeInGrid = (grid, type) => {
         if(grid[key].type === type){result += 1}
     }
     return result;
-}
-
-const ScoreIndicator = ({delta}) => {
-    let color = delta > 0 ? "#00FF00" : "#FF0000"
-    // color: delta > 0 ? "black" : "white"
-    return (<div style={{display: "inline-block"}}>{delta > 0 ? "+" : ""}{delta}</div>)
 }
 
 const DEMANDS = {
@@ -308,7 +296,6 @@ const ClimateGame = ({scenario_name}) => {
         let demandReport = getReportOfDemands();
         let newResources = {...resources};
         let newGrid = {...grid};
-        let newVillagers = villagers;
 
         for(let resource in report){
             newResources[resource] += report[resource];
@@ -317,7 +304,6 @@ const ClimateGame = ({scenario_name}) => {
         }
 
         for(let tile_key in newGrid){
-            newVillagers += newGrid[tile_key].villagers;
             if(newGrid[tile_key].action !== null){
                 if(newGrid[tile_key].action.name === "Prepare land for farming"){newGrid[tile_key].type="farmland"}
             }
