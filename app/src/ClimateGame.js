@@ -331,9 +331,11 @@ const ClimateGame = ({scenario_name}) => {
 
                 <a href="https://www.archaeology.org/news/1329-130926-easter-island-diet-rats">Read more</a>
                 </p>),
-            "Gather Resources" : (<p>TODO FLAVOR</p>),
-            "Prepare land for farming" : (<p>TODO FLAVOR</p>), 
-            "Tend to farm" : (<p>TODO FLAVOR</p>),
+            "Gather resources" : (<p>The Rapa Nui people relied heavily on palm trees. They used palm trees in all aspects of life. Palm trees were the material used to create canoes. Palm trees were used to construct their homes. Palm trees were even used to cook their meals.  <a href="https://evols.library.manoa.hawaii.edu/server/api/core/bitstreams/b6b8c73f-cf75-4db5-816d-a32babff8fa9/content">Read more</a></p>),
+            "Prepare land for farming" : (<p>Rapa Nui cultivation was mainly focused on sweet potatoes. Sweet potatoes originated from South America,
+                which would suggest an interaction between the two regions. However, recent research by Muñoz-Rodríguez et al. (2018) suggests otherwise;
+                their research indicates that the crop arrived in Polynesia by long-distance dispersal in pre-human times. <a href="https://www.sciencedirect.com/science/article/pii/S096098221830321X">Read more</a></p>), 
+            "Tend to farm" : (<p>The Rapa Nui people's diets consisted of things like rats and chickens and plants like sweet potatoes, yams and bananas. <a href="https://www.livescience.com/39926-easter-islanders-ate-rats.html">Read more</a></p>),
         }
     }
 
