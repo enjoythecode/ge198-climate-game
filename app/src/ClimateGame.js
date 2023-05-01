@@ -215,10 +215,10 @@ const DEMANDS = {
 }
 
 const ClimateGame = ({scenario_name}) => {
-    const [success] = useState(Math.floor(meterN / 2));
+    const [score, setScore] = useState(Math.floor(meterN / 2));
     const [credits, setCredits] = useState(1);
     const [grid, setGrid] = useState(newDefaultTileGrid(scenario_name));
-    const [villagers, setVillagers] = useState(success);
+    const [villagers, setVillagers] = useState(score);
     const [turns, setTurn] = useState(1);
     const [resources, setResources] = useState({
     wood: 20,
@@ -267,11 +267,45 @@ const ClimateGame = ({scenario_name}) => {
         }
 
         return 0;
-     }
+    }
+
+    const getReportOfDemands = () => {
+        let game = {
+            grid: grid,
+            setGrid: setGrid,
+            turns: turns,
+            villagers: villagers,
+            setVillagers: setVillagers,
+        }
+
+        let report = {}
+
+        for(let i=0; i < DEMANDS[scenario_name].length; i++){
+            let demand = DEMANDS[scenario_name][i];
+
+            let isActive = demand.activation.robot(game);
+            let isSatisfied = demand.satisfaction.robot(game);
+            let relevantDelta;
+            if(isActive) {
+                if(isSatisfied){
+                    relevantDelta = demand.reward.robot;
+                } else {
+                    relevantDelta = demand.penalty.robot;
+                }
+                for(let deltaKey in relevantDelta) {
+                    if(!(deltaKey in report)){report[deltaKey] = 0}
+                    report[deltaKey] += relevantDelta[deltaKey];
+                }
+            }
+            
+        }
+        return report;
+    }
 
     const advanceTurn = () => {
 
         let report = getResourceReportOfGrid(grid);
+        let demandReport = getReportOfDemands();
         let newResources = {...resources};
         let newGrid = {...grid};
         let newVillagers = villagers;
@@ -279,6 +313,7 @@ const ClimateGame = ({scenario_name}) => {
         for(let resource in report){
             newResources[resource] += report[resource];
             newResources[resource] += getUpkeepOf(resource);
+            newResources[resource] += resource in demandReport ? demandReport[resource] : 0;
         }
 
         for(let tile_key in newGrid){
@@ -290,8 +325,11 @@ const ClimateGame = ({scenario_name}) => {
             newGrid[tile_key].action = null;
         }
 
-        setVillagers(newVillagers);
+
         setResources(newResources);
+        let newScore = Math.min(meterN - 1, score + ("score" in demandReport ? demandReport["score"] : 0));
+        setScore(newScore);
+        setVillagers(newScore);
         setTurn(turns + 1);
         setGrid(newGrid);
         setCredits(credits + 1);
@@ -375,7 +413,7 @@ const ClimateGame = ({scenario_name}) => {
             <div style={{display: "flex", justifyContent: "center", paddingBottom: "15px"}}>
                 <div style={{display: "flex", width:"36vw"}}>
                 {[...Array(meterN)].map((e, i) => <div className="meterBarCell" style={{display: "flex", justifyContent: "center", height: "40px", width: (100/meterN).toString() + "%", backgroundColor: societyMeterColorAtX(i)}} key={i}>
-                    <p style={{fontSize: "35px", color: "rgba(255,255,255," + (i === success ? "1" : "0.4") + ")", position: "absolute"}}>{i}</p>                    
+                    <p style={{fontSize: "35px", color: "rgba(255,255,255," + (i === score ? "1" : "0.4") + ")", position: "absolute"}}>{i}</p>                    
                 </div>)}
 
                 </div>
