@@ -226,8 +226,9 @@ const ClimateGame = ({scenario_name}) => {
         "Easter Island": {
             "Fish": (<p>
                 Researchers in 2013 were surprised by the lack of seafood in the diet of the inhabitants of the Rapa Nui.
-                According to Amy Commendador, "Traditionally, from Polynesian cultures you have a heavy predominance of using marine products, especially in the early phase of colonization"
-                <a href="https://www.livescience.com/39926-easter-islanders-ate-rats.html">link</a>
+                According to Amy Commendador at Idaho State University, "Traditionally, from Polynesian cultures you have a heavy predominance of using marine products, especially in the early phase of colonization"
+
+                <a href="https://www.archaeology.org/news/1329-130926-easter-island-diet-rats">Read more</a>
             </p>)
         }
     }
@@ -335,7 +336,8 @@ const ClimateGame = ({scenario_name}) => {
                             <p>
                                 <h4 style={{margin: 0}}>{action.name}</h4>
 
-                                Available on {action.tileTypes.join(", ")} <br/>
+                                Available in {action.tileTypes.join(", ")} <br/>
+                                Per meeple; <span>{(Object.entries(action.resourceDelta).map(([k, v]) => {return ( (v > 0 ? "+" : "") + v.toString() + " " + k)})).join(", ")}</span><br/>
 
                                 <div className="edu">
                                     {actionFlavorText[scenario_name][action.name]}

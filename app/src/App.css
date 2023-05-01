@@ -84,6 +84,10 @@ p {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.edu a{
+  color:rgba(255, 255, 255, 0.7);
+}
+
 @keyframes animateSinan {
   0% { background-position: 0% 0%; }
   100% { background-position: 100% 0%; }
