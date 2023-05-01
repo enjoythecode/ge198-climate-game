@@ -43,7 +43,29 @@ const i2k = (x, y) => {
     return x.toString() + "_" + y.toString();
 }
 
-const newDefaultTileGrid = () => {
+const easterIslandGrid = () => {
+    
+    let types = [
+        ["water", "water", "water", "water", "water"],
+        ["water", "water", "forest", "water", "water"],
+        ["water", "forest", "forest", "forest", "forest"],
+        ["water", "forest", "forest", "water", "water"],
+        ["water", "water", "water", "water", "water"],
+    ];
+
+    let grid = {};
+    for (let i = 0; i < GRID_SIDE; i++){
+        for (let j = 0; j < GRID_SIDE; j++){
+            grid[i2k(j, i)] = new Tile(i2k(j, i), j, i, types[i][j]);
+        }
+    }
+    return grid;
+}
+
+const newDefaultTileGrid = (scenario_name) => {
+
+    if (scenario_name === "Easter Island") return easterIslandGrid();
+
     let grid = {};
     for (let i = 0; i < GRID_SIDE; i++){
         for (let j = 0; j < GRID_SIDE; j++){
@@ -96,7 +118,10 @@ const iterateOverGridInRowOrder = (grid) => {
 }
 
 const Meeples = ({count}) => {
-    return [...Array(count)].map((e, i) => <Meeple key={i}/>)
+    return (<div>
+
+    {[...Array(count)].map((e, i) => <Meeple key={i}/>)}
+    </div>)
 }
 
 const Meeple = () => {
@@ -111,7 +136,7 @@ const Card = ({content}) => {
     )
 }
 
-const meterN = 15;
+const meterN = 10;
 
 const societyMeterColorAtX = (x) => {
     let red = [255, 0, 0];
@@ -129,15 +154,16 @@ const societyMeterColorAtX = (x) => {
     return "rgba(" + res[0].toString() + ", " + res[1].toString() + ", " + res[2].toString() + ", 70%)"
 }
 
-const scenario_name = "Easter Island";
-const ClimateGame = () => {
-    const [grid, setGrid] = useState(newDefaultTileGrid);
-    const [villagers, setVillagers] = useState(5);
+const ClimateGame = ({scenario_name}) => {
+    const [success, setSuccess] = useState(Math.floor(meterN / 2))
+    const [grid, setGrid] = useState(newDefaultTileGrid(scenario_name));
+    const [villagers, setVillagers] = useState(success);
     const [turns, setTurn] = useState(1);
     const [resources, setResources] = useState({
     wood: 20,
     food: 20,
     });
+    
 
 
     const changeVillagerCountOnTile = (tile, delta) => {
@@ -199,7 +225,7 @@ const ClimateGame = () => {
     return (
     <div style={{display:"flex", flexDirection:"row", justifyContent: "space-around"}}>
         <div>
-            <div className="tile-grid" style={{width: "1200px", height:"900px"}}>
+            <div className="tile-grid" style={{width: "60vw", height:"100vh"}}>
             {iterateOverGridInRowOrder(grid).map((tile, index) => (
                 
                 <div className={"cell tile-type-" + tile.type}
@@ -246,18 +272,12 @@ const ClimateGame = () => {
                 <h1>Turn {turns}</h1>
             </div>
 
-            <div>
-                SOCIETY METER
-                <div style={{display: "flex"}}>
-                {[...Array(meterN)].map((e, i) => <div className="meterBarCell" style={{height: "40px", width: (100/meterN).toString() + "%", backgroundColor: societyMeterColorAtX(i)}} key={i}>AAA</div>)}
+            <div style={{display: "flex", justifyContent: "center", paddingBottom: "15px"}}>
+                <div style={{display: "flex", width:"36vw"}}>
+                {[...Array(meterN)].map((e, i) => <div className="meterBarCell" style={{display: "flex", justifyContent: "center", height: "40px", width: (100/meterN).toString() + "%", backgroundColor: societyMeterColorAtX(i)}} key={i}>
+                    <p style={{fontSize: "35px", color: "rgba(255,255,255," + (i === success ? "1" : "0.4") + ")", position: "absolute"}}>{i}</p>                    
+                </div>)}
 
-                </div>
-                <div>
-                    {villagers > 0 ?
-                    <p>To allocate: <Meeples count={villagers}/></p> :
-                    <button disabled={villagers !== 0} onClick={() => {advanceTurn()}}>Advance turn</button>
-                    }
-                    <br/>
                 </div>
             </div>
            
@@ -288,16 +308,33 @@ const ClimateGame = () => {
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <div>
+                    {villagers > 0 ?
+                    <p>To allocate: <br/> <Meeples count={villagers}/></p> :
+                    <button disabled={villagers !== 0} onClick={() => {advanceTurn()}}>Advance turn</button>
+                    }
+                    <br/>
+                </div>
+                    
                     <h3>Available Actions</h3>
                     <div className="actions" style={{textAlign: "left"}}>
-                    </div>
                 
-                    {ACTIONS.map((action, index) => (
-                        <div key={index}>
-                        
-                        <p><b>{action.name}</b> {"["+ action.tileTypes.join('] [') + "]"}</p>
-                        </div>
-                    ))}
+                        {ACTIONS.map((action, index) => (
+                            <div key={index} className="action">
+                            <p>
+                                <h4 style={{margin: 0}}>{action.name}</h4>
+
+                                Available on {action.tileTypes.join(", ")} <br/>
+
+                                <div className="edu">
+                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet 
+                                </div>
+                                </p>
+
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div>
                     <h3>Societal Demands</h3>

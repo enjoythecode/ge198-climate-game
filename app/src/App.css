@@ -1,3 +1,15 @@
+.action {
+  border: 1px solid gray;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 6px
+}
+
+.actions {
+  overflow: scroll;
+  height: 60vh;
+}
+
 .card {
   background-color: bisque;
   border-radius: 20px;
@@ -11,14 +23,14 @@
 
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(5, 240px);
+  grid-template-columns: repeat(5, 12vw);
   grid-template-rows: repeat(5, 20vh);
   grid-auto-flow: column;
   grid-gap: 0;
 }
 
 .tile-grid .cell {
-  border: 2px rgba(128, 128, 128, 0.5) solid;
+  border: 1px rgba(128, 128, 128, 0.3) solid;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -46,7 +58,8 @@
 
 .App {
   text-align: center;
-  background-color:blanchedalmond;
+  background-color: #060622;
+  color: white;
   width: 100vw;
   height: 100vh;
 }
@@ -54,4 +67,52 @@
 p {
   padding: 0;
   margin: 0;
+}
+
+
+/* modified from https://dev.to/gmeben/*/
+/* TODO: browser compatibility? */
+
+
+.edu{
+	border: white 3px solid;
+	animation: animateRainbowBorderColor 10s linear infinite;
+	display: inline-block;
+	margin: 0;
+	padding: 4px;
+  margin: 6px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes animateSinan {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 0%; }
+}
+
+@keyframes animateRainbowBorderColor {
+	0% {border-color: #cf5c5c}
+	10% {border-color: #c19b4a}
+	20% {border-color: #def2a0}
+	30% {border-color: #c6ee4a}
+	40% {border-color: #42eca6}
+	50% {border-color: #64b3d9}
+	60% {border-color: #208ea2}
+	70% {border-color: #498ada}
+	80% {border-color: #5b73df}
+	90% {border-color: #897ed3}
+	100% {border-color: #cf5c5c}
+}
+@keyframes animateRainbowUnderline {
+	0% {text-decoration-color: #cf5c5c}
+	10% {text-decoration-color: #c19b4a}
+	20% {text-decoration-color: #def2a0}
+	30% {text-decoration-color: #c6ee4a}
+	40% {text-decoration-color: #42eca6}
+	50% {text-decoration-color: #64b3d9}
+	60% {text-decoration-color: #208ea2}
+	70% {text-decoration-color: #498ada}
+	80% {text-decoration-color: #5b73df}
+	90% {text-decoration-color: #897ed3}
+	100% {text-decoration-color: #cf5c5c}
 }
