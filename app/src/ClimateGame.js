@@ -5,7 +5,7 @@ const TILE_TYPES = ['forest', 'farmland', 'water'];
 const RESOURCE_TYPES = ["food", "wood"]
 
 const ACTIONS = [
-    { name: 'Gather resources', currentTenseName: "Gathering resources", tileTypes: ['forest'], resourceDelta: {food: 5, wood: 1} },
+    { name: 'Gather resources', currentTenseName: "Gathering resources", tileTypes: ['forest'], resourceDelta: {food: 5, wood: 2} },
     { name: 'Prepare land for farming', currentTenseName: "Preparing land for farming", tileTypes: ['forest'] , resourceDelta: {wood: -2} },
     { name: 'Tend to farm', currentTenseName: "Tending to farm", tileTypes: ['farmland'], resourceDelta: {food: 7}  },
     { name: 'Fish', currentTenseName: "Fishing", tileTypes: ['water'], resourceDelta: {food: 6}  },
@@ -154,8 +154,30 @@ const societyMeterColorAtX = (x) => {
     return "rgba(" + res[0].toString() + ", " + res[1].toString() + ", " + res[2].toString() + ", 70%)"
 }
 
+const Fact = (props) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    if(isOpen) {
+        return (<div className="fact-unlocked" style={{flexDirection: "column"}}>{props.children}</div>)
+    } else {
+        if(props.credits > 0) {
+            return (
+                <div className="fact-locked">
+                    <button className="button-38" onClick={() => {setIsOpen(true); console.log("set is open to true?"); props.setCredits(props.credits-1);}}>Unlock this fact</button>
+                </div>)
+        } else {
+            return (<div className="fact-locked">
+                <i>Advance a turn to unlock</i>
+            
+            </div>)
+        }
+    }
+
+}
+
 const ClimateGame = ({scenario_name}) => {
-    const [success] = useState(Math.floor(meterN / 2))
+    const [success] = useState(Math.floor(meterN / 2));
+    const [credits, setCredits] = useState(1);
     const [grid, setGrid] = useState(newDefaultTileGrid(scenario_name));
     const [villagers, setVillagers] = useState(success);
     const [turns, setTurn] = useState(1);
@@ -163,9 +185,9 @@ const ClimateGame = ({scenario_name}) => {
     wood: 20,
     food: 20,
     });
+
     
-
-
+    
     const changeVillagerCountOnTile = (tile, delta) => {
         /*
          * `delta` villagers will be taken from the general pool and added to the tile pool 
@@ -198,8 +220,15 @@ const ClimateGame = ({scenario_name}) => {
     };
 
     const getUpkeepOf = (resource) => {
+        if (resource === "food") {
+            return villagers * 3;
+        }
+        if (resource === "wood") {
+            return 0;
+        }
+
         return 0;
-    }
+     }
 
     const advanceTurn = () => {
 
@@ -223,6 +252,7 @@ const ClimateGame = ({scenario_name}) => {
         setResources(newResources);
         setTurn(turns + 1);
         setGrid(newGrid);
+        setCredits(credits + 1);
     }
 
     let resourceChangeReport = getResourceReportOfGrid(grid);
@@ -234,7 +264,11 @@ const ClimateGame = ({scenario_name}) => {
                 According to Amy Commendador at Idaho State University, "Traditionally, from Polynesian cultures you have a heavy predominance of using marine products, especially in the early phase of colonization"
 
                 <a href="https://www.archaeology.org/news/1329-130926-easter-island-diet-rats">Read more</a>
-            </p>)
+                </p>),
+            "Gather Resources" : (<p>
+                
+                LOREM IPSUM DOLOR SIT AMET
+                </p>)
         }
     }
 
@@ -366,8 +400,10 @@ const ClimateGame = ({scenario_name}) => {
                                     Available in {action.tileTypes.join(", ")} <br/>
                                     Per meeple: <span>{(Object.entries(action.resourceDelta).map(([k, v]) => {return ( (v > 0 ? "+" : "") + v.toString() + " " + k)})).join(", ")}</span><br/>
 
-                                    <div className="edu">
-                                        {actionFlavorText[scenario_name][action.name]}
+                                    <div>
+                                        <Fact credits={credits} setCredits={setCredits}>
+                                            {actionFlavorText[scenario_name][action.name]}
+                                        </Fact>
                                     </div>
                                     </p>
 

@@ -7,6 +7,37 @@
   margin: 6px
 }
 
+
+.fact-locked,
+.fact-unlocked {
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  color: black;
+}
+
+.fact-locked{
+  animation: animateRainbowBackgroundColor 10s linear infinite;
+  height: 50px;
+}
+
+.fact-unlocked{
+	border: white 5px solid;
+	animation: animateRainbowBorderColor 10s linear infinite;
+	padding: 4px;
+  margin: 6px;
+
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fact-unlocked a{
+  color:rgba(255, 255, 255, 0.8);
+}
+
+
+
 .card {
   height: 200px;
   width: 280px;
@@ -92,28 +123,25 @@ td:nth-child(n + 2){
 
 /* modified from https://dev.to/gmeben/*/
 /* TODO: browser compatibility? */
-
-
-.edu{
-	border: white 3px solid;
-	animation: animateRainbowBorderColor 10s linear infinite;
-	display: inline-block;
-	margin: 0;
-	padding: 4px;
-  margin: 6px;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.edu a{
-  color:rgba(255, 255, 255, 0.8);
-}
-
 @keyframes animateSinan {
   0% { background-position: 0% 0%; }
   100% { background-position: 100% 0%; }
 }
 
+
+@keyframes animateRainbowBackgroundColor {
+	0% {background-color: #cf5c5c}
+	10% {background-color: #c19b4a}
+	20% {background-color: #def2a0}
+	30% {background-color: #c6ee4a}
+	40% {background-color: #42eca6}
+	50% {background-color: #64b3d9}
+	60% {background-color: #208ea2}
+	70% {background-color: #498ada}
+	80% {background-color: #5b73df}
+	90% {background-color: #897ed3}
+	100% {background-color: #cf5c5c}
+}
 @keyframes animateRainbowBorderColor {
 	0% {border-color: #cf5c5c}
 	10% {border-color: #c19b4a}
@@ -161,6 +189,7 @@ td:nth-child(n + 2){
   -webkit-user-select: none;
   touch-action: manipulation;
   margin-bottom: 5px;
+  height: fit-content;
 }
 .button-38-extra {
   background-color: #7ce17fcb;
