@@ -361,7 +361,7 @@ const ClimateGame = ({scenario_name}) => {
                                 <h4 style={{margin: 0}}>{action.name}</h4>
 
                                 Available in {action.tileTypes.join(", ")} <br/>
-                                Per meeple; <span>{(Object.entries(action.resourceDelta).map(([k, v]) => {return ( (v > 0 ? "+" : "") + v.toString() + " " + k)})).join(", ")}</span><br/>
+                                Per meeple: <span>{(Object.entries(action.resourceDelta).map(([k, v]) => {return ( (v > 0 ? "+" : "") + v.toString() + " " + k)})).join(", ")}</span><br/>
 
                                 <div className="edu">
                                     {actionFlavorText[scenario_name][action.name]}
