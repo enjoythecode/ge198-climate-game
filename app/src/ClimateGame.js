@@ -180,25 +180,128 @@ const countOfTypeInGrid = (grid, type) => {
 const DEMANDS = {
     "Easter Island": [
         {
-            name: "Farming",
-            flavor: "TODO FLAVOR",
+            name: "Famine",
+            flavor: <p>The island's population was around 3,000 people and all of these people depended on the island's limited resources, like its palm tree for food and shelter. One theory posits that the people overexploited the island's resources (palm trees) which they used to build canoes, shelter, and to cook food. As a result, the palm trees began to decline which led to soil erosion and decline in agricultural productivity. The population eventually plummeted to around 111 people and in order to survive cannibalism came forth in some cases.
+
+            <a href="https://www.npr.org/sections/krulwich/2013/12/09/249728994/what-happened-on-easter-island-a-new-even-scarier-scenario">Read more</a>
+            </p>,
             activation: {
-                "robot": (game) => {return game.turns >= 2},
-                "human": "turn is at least 2"
+                "robot": (game) => {return game.turns >= 1},
+                "human": "turn is at least 1"
             },
             satisfaction: {
-                "robot": (game) => {return countOfTypeInGrid(game.grid, "farmland") >= 1},
-                "human": "have at least 1 farmland"
+                "robot": (game) => {console.log(game.resources, game.resources.food, game.getUpkeepOf("food") * 2); return game.resources.food < (game.getUpkeepOf("food") * 2)},
+                "human": "have less food is less than what is consumed in 2 turns"
             },
             reward: {
-                "robot": {score: 1},
-                "human": "+1 score"
+                "robot": {score: -1},
+                "human": "-1 meeple"
             },
             penalty: {
-                "robot": {score: -1},
-                "human": "-1 score"
-            }
+                "robot": {},
+                "human": "none"
+            }, allocateVillagersToMeet: 0,
+        }, {
+            name: "Deforestation",
+            flavor: <p>
+                    The collapse of Easter Island shows that Rapa Nui people were responsible for their demise as it was attributed to the overexploitation of resources (deforestation). Using radiocarbon dating of plant samples, it can be found  that deforestation started around the arrival of a significant human population to the island and was essentially complete by the sixteenth century.
+
+                    <a href="https://rainforests.mongabay.com/09easter_island.htm">Read more</a>
+                </p>,
+                activation: {
+                    "robot": (game) => {return game.turns >= 1},
+                    "human": "turn is at least 1"
+                },
+                satisfaction: {
+                    "robot": (game) => {return countOfTypeInGrid(game.grid, "forest") <= 3},
+                    "human": "you have less than 4 forest tiles remaining"
+                },
+                reward: {
+                    "robot": {score: -1},
+                    "human": "-1 meeple"
+                },
+                penalty: {
+                    "robot": {},
+                    "human": "none"
+                }, allocateVillagersToMeet: 0,
+        }, {
+            name: "Population Growth",
+            flavor: <p>
+                    By about 1370 C.E., researchers believe that population growth in Rapa Nui reached its maximum at about 5,000 people. Facing stress from prolonged droughts and salt-laden winds, Rapa Nui’s population struggled to balance the island’s limited resources with the population numbers. (McAnany, 2021) 
+
+                </p>,
+                activation: {
+                    "robot": (game) => {return game.turns >= 5},
+                    "human": "turn is at least 5"
+                },
+                satisfaction: {
+                    "robot": (game) => {return game.villagers >= 7},
+                    "human": "you have at least 7 meeples"
+                },
+                reward: {
+                    "robot": {score: -1},
+                    "human": "-1 meeple"
+                },
+                penalty: {
+                    "robot": {},
+                    "human": "none"
+                }, allocateVillagersToMeet: 0,
+        }, {
+            name: "Maoi Construction",
+            flavor: <p>
+                    The iconic Easter Island statues (Moai) represent the ancestral chiefs of the Rapa Nui people who were believed to have god-like powers.
+                    The statues were carved out of volcanic tuff and ranged in height from 7 to 70 feet high and weighed between 10 to 12 metric tons.
+                    Experts suggest that each statue took around 40 individuals to carve and move and some 300-400 more people to make the rope and food for each project.
+
+                    <a href="https://www.metmuseum.org/toah/hd/eais/hd_eais.htm">Read more.</a>
+                </p>,
+                activation: {
+                    "robot": (game) => {return game.turns >= 3 && game.turns <= 5;},
+                    "human": "turn is between 3 and 5"
+                },
+                satisfaction: {
+                    "robot": (game) => {return game.demandsAllocatedTo.includes("Maoi Construction")},
+                    "human": "you allocate one meeple to this action"
+                },
+                reward: {
+                    "robot": {score: 2, },
+                    "human": "1 meeple"
+                },
+                penalty: {
+                    "robot": {score: -1},
+                    "human": "-1 meeple"
+                }, allocateVillagersToMeet: 1
+        }, {
+            name: "European Contact",
+            flavor: <p>
+                Europeans first made contact with the Rapa Nui people on Easter Sunday in 1722.
+                Led by Dutch navigator, Jacob Roggeveen, these Europeans brought with them many Western diseases, such as tuberculosis,
+                smallpox, and dysentery. One Dutch officer who was apart of this first voyage wrote of the encounter, saying “During the morning
+                [the captain] brought an Easter Islander onboard with his craft. This hapless creature seemed to be very glad to behold us, and
+                he showed the greatest wonder at the build of our ship. He took special notice of the tautness of our spars, the stoutness of our
+                rigging and running gear, the sails, the guns, which he felt all over with minute attention and with everything else that he saw".
+
+                <a href="https://www.americanscientist.org/article/rethinking-the-fall-of-easter-island">Read more.</a>
+            </p>,
+            activation: {
+                "robot": (game) => {return game.turns >= 10;},
+                "human": "turn is at least 10"
+            },
+            satisfaction: {
+                "robot": (game) => {return game.demandsAllocatedTo.includes("Maoi Construction")},
+                "human": "you allocate two meeples to communicate, trade (representing impact caused by foreign contact)."
+            },
+            reward: {
+                "robot": {},
+                "human": "none"
+            },
+            penalty: {
+                "robot": {score: -2},
+                "human": "-2 meeples"
+            }, allocateVillagersToMeet: 2
         }
+
+        
     ]
 }
 
@@ -210,9 +313,9 @@ const ClimateGame = ({scenario_name}) => {
     const [turns, setTurn] = useState(1);
     const [resources, setResources] = useState({
     wood: 20,
-    food: 20,
+    food: 35,
     });
-
+    const [demandsAllocatedTo, setDemandsAllocatedTo] = useState([]);
     
     
     const changeVillagerCountOnTile = (tile, delta) => {
@@ -257,14 +360,23 @@ const ClimateGame = ({scenario_name}) => {
         return 0;
     }
 
-    const getReportOfDemands = () => {
-        let game = {
+    const gameDict = () => {
+        return {
             grid: grid,
             setGrid: setGrid,
             turns: turns,
             villagers: villagers,
             setVillagers: setVillagers,
+            resources: resources,
+            setResources: setResources,
+            getUpkeepOf: getUpkeepOf,
+            demandsAllocatedTo: demandsAllocatedTo,
+            setDemandsAllocatedTo: setDemandsAllocatedTo,
         }
+    }
+
+    const getReportOfDemands = () => {
+        let game = gameDict();
 
         let report = {}
 
@@ -401,7 +513,7 @@ const ClimateGame = ({scenario_name}) => {
             <div style={{display: "flex", justifyContent: "center", paddingBottom: "15px"}}>
                 <div style={{display: "flex", width:"36vw"}}>
                 {[...Array(meterN)].map((e, i) => <div className="meterBarCell" style={{display: "flex", justifyContent: "center", height: "40px", width: (100/meterN).toString() + "%", backgroundColor: societyMeterColorAtX(i)}} key={i}>
-                    <p style={{fontSize: "35px", color: "rgba(255,255,255," + (i === score ? "1" : "0.4") + ")", position: "absolute"}}>{i}</p>                    
+                    <p style={{fontSize: "35px", color: (i === score ? "rgba(255,255,255,1)" : "rgba(0,0,0,0.3"), position: "absolute"}}>{i}</p>                    
                 </div>)}
 
                 </div>
@@ -480,45 +592,58 @@ const ClimateGame = ({scenario_name}) => {
                     </div>
                 </div>
                 <div style={{marginRight: "8px"}}>
-                    <h3>Societal Demands</h3>
-                    <div style={{overflow: "scroll"}}>
+                    <h3>Potential Societal Events</h3>
+                    <div style={{overflow: "scroll", maxHeight: "75vh"}}>
                         {DEMANDS[scenario_name].map((demand, i) => {
-                            let game = {
-                                grid: grid,
-                                setGrid: setGrid,
-                                turns: turns,
-                                villagers: villagers,
-                                setVillagers: setVillagers,
-                            }
+                            let game = gameDict();
                             
                             let isActive = demand.activation.robot(game);
                             let isSatisfied = demand.satisfaction.robot(game);
-                            let rewardText = <div>Reward: {demand.reward.human}</div>;
-                            let penaltyText = <div>Penalty: {demand.penalty.human}</div>;
+                            let rewardText = <div>Result if met: {demand.reward.human}</div>;
+                            let penaltyText = <div>Result if not met: {demand.penalty.human}</div>;
+                            if (true) {
 
+                            
                             return (
-                                <div className="card">
-                                    <div style={{textAlign: "left", color: isActive ? "white" : "gray"}}>
-                                        <b>{demand.name} {isActive ? "[active]" : "[inactive]"}</b>
-                                        <br/>
-                                        <br/>
+                                    <div className="card" key={demand.name}>
+                                        <div style={{textAlign: "left", color: isActive ? "white" : "gray"}}>
+                                            <b>{demand.name} {isSatisfied ? "[satisfied]" : ""}</b>
+                                            <br/>
+                                            <br/>
 
-                                        {isActive ? "Active because " : "Will activate when "}{demand.activation.human}<br/>
+                                            {isActive ? "Enabled because " : "Will enable when "}{demand.activation.human}<br/>
 
-                                        <p style={{color: isActive ? (isSatisfied ? "green" : "white") : "inherit"}}>
-                                            {isSatisfied ? "You have fulfilled: " : "Demand is to "}{demand.satisfaction.human}<br/>
-                                        </p>
-                                        <br/>
+                                            <p style={{color: isActive ? (isSatisfied ? "green" : "white") : "inherit"}}>
+                                                {isSatisfied ? "You have met: " : "Will be met if "}{demand.satisfaction.human}<br/>
+                                            </p>
+                                            <br/>
 
-                                        {(isActive && isSatisfied) ? <b>{rewardText}</b> : rewardText}
-                                        {(isActive && !isSatisfied) ? <b>{penaltyText}</b> : penaltyText}
+                                            {(isActive && isSatisfied) ? <b>{rewardText}</b> : rewardText}
+                                            {(isActive && !isSatisfied) ? <b>{penaltyText}</b> : penaltyText}
+                                            {demand.allocateVillagersToMeet > 0 ? <div>
+                                                {demandsAllocatedTo.includes(demand.name) ? 
+                                                    <div>
+                                                        <Meeples count={demand.allocateVillagersToMeet}/>
+                                                        <button className="button-38" style={{marginRight: "6px"}} onClick={() => {setDemandsAllocatedTo(demandsAllocatedTo.filter((e) => e !== demand.name)); setVillagers(villagers + demand.allocateVillagersToMeet);}}>cancel</button>
+                                                    </div>
+                                                    : 
+                                                    <button className="button-38" disabled={!isActive || villagers < demand.allocateVillagersToMeet} onClick={() => {demandsAllocatedTo.push(demand.name); setVillagers(villagers - demand.allocateVillagersToMeet);}}>Allocate <Meeples count={demand.allocateVillagersToMeet}/></button>
+                                                }
+                                            
+                                            
+                
 
-                                        <Fact credits={credits} setCredits={setCredits}>
-                                            {demand.flavor}
-                                        </Fact>
+                                            </div> : ""}
 
-                                    </div>
-                                </div>)
+                                            <Fact credits={credits} setCredits={setCredits}>
+                                                {demand.flavor}
+                                            </Fact>
+
+                                        </div>
+                                    </div>)
+                            } else {
+                                return "";
+                            }
                         })}
                         </div>
                 </div>
